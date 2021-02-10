@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/filters/__init__.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/handlers/users/__init__.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/handlers/users/add_handler.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/handlers/users/pics_handler.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/handlers/users/text_handler.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/add_item_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/back_button_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/iserotic_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/item_delete_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/mood_type_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/music_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/pics_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/keyboards/inline/text_inline_keyboard.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/middlewares/one_time_per_period.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/middlewares/throttling.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/scripts/time_script.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/utils/db_api/db.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/utils/misc/one_time_per_period.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/utils/misc/throttling.py" charset="UTF-8" />
+    <file url="PROJECT" charset="windows-1251" />
+  </component>
+</project>
