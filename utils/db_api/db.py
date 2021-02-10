@@ -1,6 +1,4 @@
-import logging
 import sqlite3
-from pprint import pprint
 import typing
 
 
@@ -265,11 +263,40 @@ class Database:
         return data[0], data[1], data[2]
 
     def set_cooldown(self, owner: str, time_trigger: typing.Optional[int, float]):
-        data = self.execute(f"SELECT * FROM is_got WHERE owner = {owner}")
+        data = self.execute(f"SELECT * FROM is_got WHERE owner = '{owner}'")
         if data is None:
             sql = f"""
             INSERT
             INTO
-                
+                is_got
+                (owner, time_trigger)
+                VALUES
+                (?, ?)
             """
+            self.execute(sql, commit=True)
+        else:
+            sql = f"""
+            UPDATE is_got
+            SET time_trigger = {time_trigger}
+            WHERE owner = "{owner}"
+            """
+            self.execute(sql, commit=True)
+
+    def check_voice_avaliable(self,
+                              owner: str,
+                              time_trigger: typing.Union[int, float],
+                              cooldown: typing.Union[int, float] = 3600) -> bool:
+        time_from_db = self.execute(f"SELECT time_trigger FROM is_got WHERE owner = '{owner}'", fetchone=True)
+        delta = time_trigger - time_from_db
+        if delta >= cooldown:
+            return True
+        else:
+            return False
+
+    def return_delta(self,
+                     owner: str,
+                     time_trigger: typing.Union[int, float]
+                     ) -> typing.Union[int, float]:
+        time_from_db = self.execute(f"SELECT time_trigger FROM is_got WHERE owner = '{owner}'", fetchone=True)
+        return time_trigger - time_from_db
 
