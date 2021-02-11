@@ -262,7 +262,7 @@ class Database:
             return None
         return data[0], data[1], data[2]
 
-    def set_cooldown(self, owner: str, time_trigger: typing.Optional[int, float]):
+    def set_cooldown(self, owner: str, time_trigger: typing.Union[int, float]):
         data = self.execute(f"SELECT * FROM is_got WHERE owner = '{owner}'")
         if data is None:
             sql = f"""
@@ -300,3 +300,6 @@ class Database:
         time_from_db = self.execute(f"SELECT time_trigger FROM is_got WHERE owner = '{owner}'", fetchone=True)
         return time_trigger - time_from_db
 
+    def delete_pic(self,
+                   pic_id: int):
+        self.execute(f"DELETE FROM pics WHERE pic_id = {pic_id}", commit=True)

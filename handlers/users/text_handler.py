@@ -61,7 +61,6 @@ async def show_text_for_leila(call: CallbackQuery, callback_data: dict):
                            reply_markup=delete_keyboard(item_category='text', owner='leila', item_id=text_id)[0])
 
 
-
 @dp.callback_query_handler(Sasha(), show_text.filter())
 async def show_text_for_sasha(call: CallbackQuery, callback_data: dict):
     await call.answer()
@@ -94,7 +93,8 @@ async def delete_item(call: CallbackQuery, callback_data: dict):
         db.delete_film(film_id=item_id)
     elif item_category == 'music':
         db.delete_music(music_id=item_id)
-    elif item_category == 'pic':
+    elif item_category == 'pics':
         db.delete_pic(pic_id=item_id)
     await call.answer(text=f'Вы успешно удалили {item_category}')
-    await call.message.delete()
+    if item_category != "pics":
+        await call.message.delete()

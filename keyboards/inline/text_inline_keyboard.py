@@ -8,7 +8,7 @@ from keyboards.inline.add_item_inline_keyboard import add_item_keyboard
 from loader import db
 
 pagination_call = CallbackData("paginator", "key", "page")
-show_text = CallbackData("show_text", "text_id", "chat_id")
+show_text = CallbackData("show_text", "text_id")
 
 
 def get_better_pages_keyboard(sliced_array, owner: str, page: int = 1):
@@ -110,5 +110,5 @@ def get_better_pages_keyboard(sliced_array, owner: str, page: int = 1):
         markup.insert(button)
 
     markup.row(*pages_buttons)
-    markup.row(add_item_keyboard(item_category='text', owner=owner))
+    markup.row(add_item_keyboard(item_category='text', owner=owner)[1])
     return markup
