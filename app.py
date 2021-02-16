@@ -1,6 +1,7 @@
 from loader import scheduler
 from scripts.time_script import scheduler_job
 from utils.set_bot_commands import set_default_commands
+import sqlite3
 
 
 async def on_startup(dp):
@@ -12,6 +13,10 @@ async def on_startup(dp):
     await on_startup_notify(dp)
     await set_default_commands(dp)
     scheduler_job()
+    try:
+        db.create_tables()
+    except sqlite3.OperationalError:
+        pass
 
 
 if __name__ == '__main__':
