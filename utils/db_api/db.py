@@ -18,12 +18,16 @@ class Database:
         cursor = connection.cursor()
         data = None
         cursor.execute(sql, parameters)
-        if commit:
-            connection.commit()
-        if fetchall:
-            data = cursor.fetchall()
-        if fetchone:
-            data = cursor.fetchone()
+        try:
+            if commit:
+                connection.commit()
+            if fetchall:
+                data = cursor.fetchall()
+            if fetchone:
+                data = cursor.fetchone()
+        except sqlite3.OperationalError:
+            sql = self.create_tables()
+            connection.commit(sql)
         connection.close()
         return data
 
