@@ -10,7 +10,7 @@ admins = [
 ]
 
 owner_id = 240228154
-Leila_id = 717721153
+leila_id = 717721153
 
 ip = os.getenv("ip")
 

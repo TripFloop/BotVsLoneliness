@@ -1,21 +1,46 @@
-import emoji
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.callback_data import CallbackData
 
+from keyboards.inline.add_item_inline_keyboard import add_item_keyboard
+from keyboards.inline.text_inline_keyboard import pagination_call
 from loader import db
-from .add_item_inline_keyboard import add_item_keyboard
-from .item_delete_inline_keyboard import delete_keyboard
-from .text_inline_keyboard import pagination_call
 
+show_voice_message = CallbackData("show_voice", "voice_message_id")
+pagination_call_voice =  CallbackData("paginator", "key", "page")
 
-def get_page_keyboard_pics(owner: str, item_id: int, key="pics", page: int = 1, iserotic: bool = None):
+def get_better_pages_keyboard_voice(sliced_array, owner: str, page: int = 1):
+    key = "voice_messages"
     markup = InlineKeyboardMarkup(row_width=1)
+    MAX_ITEMS_PER_PAGE = 10
+    voice_buttons = list()
+
+    for voice in sliced_array:
+        id_in_buttons = sliced_array.index(voice) + 1
+        offset = (page - 1) * MAX_ITEMS_PER_PAGE
+        id_in_buttons += offset
+        if len(voice[2]) >= 20:
+            voice = list(voice)
+            voice[2] = voice[2][:20] + '...'
+        voice_buttons.append(
+            InlineKeyboardButton(
+                text=f'{id_in_buttons}.  {voice[2]}',
+                callback_data=show_voice_message.new(voice_message_id=voice[0])
+            )
+        )
+
     pages_buttons = list()
     first_page = 1
     first_page_text = "« 1"
-    count_rows_in_db = db.count_number_of_rows_in_table("pics", owner=owner)
+
+    count_rows_in_db = db.count_number_of_rows_in_table("voice_messages", owner=owner)
     count_rows_in_db = int(count_rows_in_db[0])
-    max_pages = count_rows_in_db
-    max_page_text = f"» {max_pages}"
+
+    if count_rows_in_db % MAX_ITEMS_PER_PAGE == 0:
+        max_page = count_rows_in_db // MAX_ITEMS_PER_PAGE
+    else:
+        max_page = count_rows_in_db // MAX_ITEMS_PER_PAGE + 1
+
+    max_page_text = f"» {max_page}"
 
     pages_buttons.append(
         InlineKeyboardButton(
@@ -56,7 +81,7 @@ def get_page_keyboard_pics(owner: str, item_id: int, key="pics", page: int = 1, 
     next_page = page + 1
     next_page_text = f"{next_page} >"
 
-    if next_page <= max_pages:
+    if next_page <= max_page:
         pages_buttons.append(
             InlineKeyboardButton(
                 text=next_page_text,
@@ -75,14 +100,12 @@ def get_page_keyboard_pics(owner: str, item_id: int, key="pics", page: int = 1, 
         InlineKeyboardButton(
             text=max_page_text,
             callback_data=pagination_call.new(key=key,
-                                              page=max_pages)
+                                              page=max_page)
         )
     )
+    for button in voice_buttons:
+        markup.insert(button)
 
     markup.row(*pages_buttons)
-    if iserotic:
-        markup.row(InlineKeyboardButton(text=emoji.emojize(":red_heart: Мяуротика :3"),
-                                        callback_data=pagination_call.new(key=key, page="current_page")))
-    markup.row(add_item_keyboard(item_category="pics", owner=owner)[1])
-    markup.row(delete_keyboard(item_category="pics", owner=owner, item_id=item_id)[1])
+    markup.row(add_item_keyboard(item_category="voice_messages", owner=owner)[1])
     return markup

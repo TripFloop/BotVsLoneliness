@@ -20,8 +20,7 @@ async def show_pics_menu_leila(message: types.Message):
                                    reply_markup=get_page_keyboard_pics(owner=owner, item_id=pic_id, iserotic=iserotic))
     except TypeError:
         await message.answer("В базе пока нет картинок, добавь первую",
-                             reply_markup=InlineKeyboardMarkup(add_item_keyboard(item_category="pics", owner=owner),
-                                                               row_width=1))
+                             reply_markup=add_item_keyboard("pics", owner, 1)[0])
 
 
 @dp.message_handler(Sasha(), text=emoji.emojize(":card_file_box: Меню твоих картинок"))
@@ -35,8 +34,6 @@ async def show_pics_menu_sasha(message: types.Message):
     except TypeError:
         await message.answer("В базе пока нет картинок, добавь первую",
                              reply_markup=add_item_keyboard("pics", owner, 1)[0])
-
-
 
 
 @dp.callback_query_handler(Leila(), pagination_call.filter(key="pics"))
@@ -64,6 +61,7 @@ async def show_chosen_pic(call: CallbackQuery, callback_data: dict):
         reply_markup=get_page_keyboard_pics(owner=owner, page=current_page, item_id=pic_id, iserotic=iserotic)
     )
 
-@dp.message_handler(commands=["test"])
-async def test(message: types.Message):
-    await message.answer("test", reply_markup=add_item_keyboard(item_category="pics", owner="sasha", row_width=1)[0])
+
+# @dp.message_handler(commands=["test"])
+# async def test(message: types.Message):
+#     await message.answer("test", reply_markup=add_item_keyboard(item_category="pics", owner="sasha", row_width=1)[0])

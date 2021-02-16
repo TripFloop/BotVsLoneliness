@@ -1,4 +1,5 @@
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.builtin import CommandStart
 
 from filters import Sasha, Leila
@@ -6,16 +7,20 @@ from keyboards.default import menu_for_me, menu_for_leila
 from loader import dp
 
 
-@dp.message_handler(CommandStart(), Sasha())
-async def bot_start(message: types.Message):
+@dp.message_handler(CommandStart(), Sasha(), state="*")
+async def bot_start(message: types.Message, state: FSMContext = None):
     await message.answer(text='Добро пожаловать в бота, который был создан со всей душой\n'
                               'Пожалуйста, используй команды', reply_markup=menu_for_me)
+    if state:
+        await state.finish()
 
 
-@dp.message_handler(CommandStart(), Leila())
-async def bot_start(message: types.Message):
+@dp.message_handler(CommandStart(), Leila(), state="*")
+async def bot_start(message: types.Message, state: FSMContext = None):
     await message.answer(text='Добро пожаловать в бота, который был создан со всей душой\n'
                               'Пожалуйста, используй команды', reply_markup=menu_for_leila)
+    if state:
+        await state.finish()
 
 
 @dp.message_handler(CommandStart())

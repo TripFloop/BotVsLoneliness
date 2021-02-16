@@ -1,35 +1,34 @@
 import logging
-import schedule
 from loader import scheduler
 
 from loader import db, bot
 import random
-from data.config import Leila_id, owner_id
+from data.config import leila_id, owner_id
+import datetime
+from datetime import date
 
 
-async def send_to_Leila(iserotic: bool):
+async def send_to_leila(iserotic: bool):
     try:
-        await bot.send_photo(chat_id=Leila_id, photo=db.get_rand_pic(iserotic=iserotic, from_name='Sasha'),
+        await bot.send_photo(chat_id=leila_id, photo=db.get_rand_pic(iserotic=iserotic, owner="sasha"),
                              caption=db.get_rand_text(iserotic=iserotic))
     except Exception as err:
         logging.error(err)
-    return schedule.CancelJob
 
 
-async def send_to_Sasha(iserotic: bool):
+async def send_to_sasha(iserotic: bool):
     try:
-        await bot.send_photo(chat_id=owner_id, photo=db.get_rand_pic(iserotic=iserotic, from_name='Leila'),
+        await bot.send_photo(chat_id=owner_id, photo=db.get_rand_pic(iserotic=iserotic, owner="leila"),
                              caption=db.get_rand_text(iserotic=iserotic))
     except Exception as err:
         logging.error(err)
-    return schedule.CancelJob
 
 
 def hours_for_pics_day():
     # Get 2 random hours for sending usual pics from 8 to 22 hours
     # Day time
     hours_for_sasha_day = random.randrange(8, 22)
-    hours_for_leila_day = random.randrange(8, 22)
+    hours_for_leila_day = random.randrange(7, 21)
     return hours_for_sasha_day, hours_for_leila_day
 
 
@@ -37,39 +36,34 @@ def hours_for_pics_evening():
     # Get 2 random hours for sending evening pics from 23 to 3 hours
     # Evening time
     evening_hours = [0, 1, 2, 3, 23]
+    evening_hours_for_leila = [hour - 1 if hour >= 1 else 23 for hour in evening_hours]
     hour_for_sasha_evening = random.choice(evening_hours)
-    hour_for_leila_evening = random.choice(evening_hours)
+    hour_for_leila_evening = random.choice(evening_hours_for_leila)
     return hour_for_sasha_evening, hour_for_leila_evening
 
 
-def make_all_hours_in_one_place():
-    times_per_day = random.randint(1, 3)
-    hours_day_leila_dict = {}
-    hours_day_sasha_dict = {}
-    for time in range(times_per_day):
-        hour_for_sasha, hour_for_leila = hours_for_pics_day()
-        hours_day_sasha_dict.update({hour_for_sasha: time})
-        hours_day_leila_dict.update({hour_for_leila: time})
-    evening_hour_for_sasha, evening_hour_for_Leila = hours_for_pics_evening()
-    logging.info('Im here')
-    return hours_day_sasha_dict, hours_day_leila_dict, evening_hour_for_sasha, evening_hour_for_Leila
+def main_func():
+    day_hours = random.randint(1, 3)
+    leila_day_hours = [hours_for_pics_day()[1] for _ in range(1, day_hours + 1)]
+    sasha_day_hours = [hours_for_pics_day()[0] for _ in range(1, day_hours + 1)]
+    for hour in zip(sasha_day_hours, leila_day_hours):
+        scheduler.add_job(send_to_sasha, "date", args=[False],
+                          run_date=f"{date.today().year}-{date.today().month}-{date.today().day} {hour[0]}:00:05")
+        scheduler.add_job(send_to_leila, "date", args=[False],
+                          run_date=f"{date.today().year}-{date.today().month}-{date.today().day} {hour[1]}:00:05")
+    eve_hour_sasha, eve_hour_leila = hours_for_pics_evening()
+    scheduler.add_job(send_to_sasha,
+                      "date",
+                      args=[True],
+                      run_date=f"{date.today().year}-{date.today().month}-{date.today().day} {eve_hour_sasha}:00:05")
+    scheduler.add_job(send_to_leila,
+                      "date",
+                      args=[True],
+                      run_date=f"{date.today().year}-{date.today().month}-{date.today().day} {eve_hour_leila}:00:05")
+    logging.info("Today we chose such hours")
+    logging.info(f"For Sasha - Day: {sasha_day_hours}, Night: {eve_hour_sasha}")
+    logging.info(f"For Leila - Day: {leila_day_hours}, Night: {eve_hour_leila}")
 
 
-def main_script(hours_day_sasha_dict: dict, hours_day_leila_dict: dict, evening_hour_for_sasha: int,
-                evening_hour_for_leila: int):
-    for hour in hours_day_sasha_dict:
-        scheduler.add_job(send_to_Sasha(iserotic=False), trigger="cron", hour=hour,
-                          id=f'day_sasha_{hours_day_sasha_dict[hour]}')
-    for hour in hours_day_leila_dict:
-        scheduler.add_job(send_to_Leila(iserotic=False), trigger="cron", hour=hour,
-                          id=f'day_leila_{hours_day_leila_dict[hour]}')
-    # --------------------Night time---------------------------
-    scheduler.add_job(send_to_Sasha(iserotic=True), trigger="cron", hour=evening_hour_for_sasha, id='evening_sasha')
-    scheduler.add_job(send_to_Leila(iserotic=True), trigger="cron", hour=evening_hour_for_leila, id='evening_leila')
-
-logging.info(callable(make_all_hours_in_one_place()))
-
-
-scheduler.add_job(func=make_all_hours_in_one_place, trigger="cron", hour=23, minute=57)
-#scheduler.add_job(clear_pics_jobs, trigger="cron", hour=23, minute=58)
-#scheduler.add_job(main_script(), trigger="cron", hour=23, minute=59)
+def scheduler_job():
+    scheduler.add_job(main_func, "cron", hour="0", minute="5")

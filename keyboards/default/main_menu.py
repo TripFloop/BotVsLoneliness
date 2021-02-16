@@ -18,7 +18,7 @@ menu_for_leila = ReplyKeyboardMarkup(keyboard=[
         KeyboardButton(text=emoji.emojize(":film_frames: Списки наших любимых тайтлов и фильмов"))
     ],
     [
-        KeyboardButton(text=emoji.emojize(":multiple_musical_notes: Плейлист"))
+        KeyboardButton(text=emoji.emojize(":musical_note: Плейлист"))
     ],
     ], resize_keyboard=True
 )
@@ -40,7 +40,7 @@ menu_for_me = ReplyKeyboardMarkup(keyboard=[
         KeyboardButton(text=emoji.emojize(":film_frames: Списки наших любимых тайтлов и фильмов"))
     ],
     [
-        KeyboardButton(text=emoji.emojize(":multiple_musical_notes: Плейлист"))
+        KeyboardButton(text=emoji.emojize(":musical_note: Плейлист"))
     ],
     ], resize_keyboard=True
 )

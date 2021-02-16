@@ -4,12 +4,13 @@ from aiogram.utils.callback_data import CallbackData
 from keyboards.inline.add_item_inline_keyboard import add_item_keyboard
 from keyboards.inline.text_inline_keyboard import pagination_call
 from loader import db
+from utils import duration_convertation
 
 show_track = CallbackData("show_track", "track_id")
 
 
-def get_better_pages_keyboard_music(sliced_array, owner: str, page: int = 1):
-    key = "music"
+def get_better_pages_keyboard_music(sliced_array, mood: str, page: int = 1):
+    key = "music" + "_" + mood
     markup = InlineKeyboardMarkup(row_width=1)
     MAX_ITEMS_PER_PAGE = 10
     music_buttons = list()
@@ -18,13 +19,12 @@ def get_better_pages_keyboard_music(sliced_array, owner: str, page: int = 1):
         id_in_buttons = sliced_array.index(music) + 1
         offset = (page - 1) * MAX_ITEMS_PER_PAGE
         id_in_buttons += offset
-        if len(text[1]) >= 20:
-            text = list(text)
-            text[1] = text[1][:20] + '...'
-        texts_buttons.append(
+        music_name = music[3][:40]
+        music_buttons.append(
             InlineKeyboardButton(
-                text=f'{id_in_buttons}.  {text[1]}',
-                callback_data=show_track.new(text_id=text[0])
+                text=f'{id_in_buttons}. {music_name} {duration_convertation(music[4])}',
+                callback_data=show_track.new(track_id=music[0])
+
             )
         )
 
@@ -32,7 +32,7 @@ def get_better_pages_keyboard_music(sliced_array, owner: str, page: int = 1):
     first_page = 1
     first_page_text = "« 1"
 
-    count_rows_in_db = db.count_number_of_rows_in_table("texts_to_pic", owner=owner)
+    count_rows_in_db = db.count_number_of_rows_in_table("music")
     count_rows_in_db = int(count_rows_in_db[0])
 
     if count_rows_in_db % MAX_ITEMS_PER_PAGE == 0:
@@ -103,9 +103,9 @@ def get_better_pages_keyboard_music(sliced_array, owner: str, page: int = 1):
                                               page=max_page)
         )
     )
-    for button in texts_buttons:
+    for button in music_buttons:
         markup.insert(button)
 
     markup.row(*pages_buttons)
-    markup.row(add_item_keyboard(item_category='text', owner=owner))
+    markup.row(add_item_keyboard(item_category='music', owner=0)[1])
     return markup

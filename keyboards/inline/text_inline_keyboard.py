@@ -2,6 +2,7 @@ import logging
 from pprint import pprint
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils import emoji
 from aiogram.utils.callback_data import CallbackData
 
 from keyboards.inline.add_item_inline_keyboard import add_item_keyboard
@@ -21,12 +22,16 @@ def get_better_pages_keyboard(sliced_array, owner: str, page: int = 1):
         id_in_buttons = sliced_array.index(text) + 1
         offset = (page - 1) * MAX_ITEMS_PER_PAGE
         id_in_buttons += offset
+        if text[2]:
+            iserotic_sign = emoji.emojize(":underage:")
+        else:
+            iserotic_sign = ""
         if len(text[1]) >= 20:
             text = list(text)
             text[1] = text[1][:20] + '...'
         texts_buttons.append(
             InlineKeyboardButton(
-                text=f'{id_in_buttons}.  {text[1]}',
+                text=f'{id_in_buttons}.  {text[1]} {iserotic_sign}',
                 callback_data=show_text.new(text_id=text[0])
             )
         )

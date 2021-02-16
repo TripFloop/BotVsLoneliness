@@ -48,14 +48,26 @@ class Database:
         self.execute(sql, parameters=(file_id, comment), commit=True)
 
     def delete_voice_message(self, voice_message_id: int, owner: str):
-        self.execute(sql=f'DELETE FROM voice_messages_from_{owner} WHERE voice_message_id={voice_message_id}',
-                     commit=True)
+        sql = f"""
+        DELETE FROM
+            voice_messages_from_{owner}
+        WHERE
+            voice_message_id={voice_message_id}
+        """
+        self.execute(sql, commit=True)
 
     def get_voice_message(self, voice_message_id: int, owner: str):
-        file_id = self.execute(
-            sql=f"SELECT file_id FROM voice_messages_from_{owner} WHERE voice_message_id='{voice_message_id}'",
-            fetchone=True)
-        return file_id[2:-3]
+        sql = f"""
+        SELECT
+            file_id, comment
+        FROM
+            voice_messages_from_{owner}
+        WHERE
+            voice_message_id = {voice_message_id}
+        """
+        data = self.execute(sql, fetchone=True)
+        file_id, comment = data
+        return file_id, comment
 
     def add_text(self, text: str, owner: str, iserotic: bool):
         sql = f"""
@@ -126,11 +138,19 @@ class Database:
            """
         self.execute(sql, commit=True)
 
+    def delete_film(self, film_id: int):
+        sql = f"""
+           DELETE
+           FROM films
+           WHERE film_id = {film_id}
+           """
+        self.execute(sql, commit=True)
+
     def add_film(self, film_name: str, comment: str = None):
         sql = f"""
            INSERT
            INTO
-               film
+               films
                (film_name, comment)
            VALUES
                (?, ?)
@@ -177,6 +197,20 @@ class Database:
             *
         FROM
             voice_messages_from_{owner}
+        LIMIT
+            10
+        OFFSET 
+            {offset}
+        """
+        return self.execute(sql, fetchall=True)
+
+    def get_slice_of_films(self, page: int = 1):
+        offset = 10 * (page - 1)
+        sql = f"""
+        SELECT
+            *
+        FROM
+            films
         LIMIT
             10
         OFFSET 
@@ -232,7 +266,6 @@ class Database:
         LIMIT 1
         """
         data = self.execute(sql=sql, fetchone=True)
-        data = str(data[0])
         return data
 
     def add_music(self, music_mood_type: str, file_id: str, music_name: str, duration: int):
@@ -263,22 +296,29 @@ class Database:
         return data[0], data[1], data[2]
 
     def set_cooldown(self, owner: str, time_trigger: typing.Union[int, float]):
-        data = self.execute(f"SELECT * FROM is_got WHERE owner = '{owner}'")
+        data_sql = f"""
+        SELECT
+            *
+        FROM
+            is_got
+        WHERE who = "{owner}"
+        """
+        data = self.execute(data_sql, fetchone=True)
         if data is None:
             sql = f"""
             INSERT
             INTO
                 is_got
-                (owner, time_trigger)
+                (who, time_trigger)
                 VALUES
                 (?, ?)
             """
-            self.execute(sql, commit=True)
+            self.execute(sql, parameters=(owner, time_trigger), commit=True)
         else:
             sql = f"""
             UPDATE is_got
             SET time_trigger = {time_trigger}
-            WHERE owner = "{owner}"
+            WHERE who = "{owner}"
             """
             self.execute(sql, commit=True)
 
@@ -286,7 +326,7 @@ class Database:
                               owner: str,
                               time_trigger: typing.Union[int, float],
                               cooldown: typing.Union[int, float] = 3600) -> bool:
-        time_from_db = self.execute(f"SELECT time_trigger FROM is_got WHERE owner = '{owner}'", fetchone=True)
+        time_from_db = int(self.execute(f"SELECT time_trigger FROM is_got WHERE who = '{owner}'", fetchone=True)[0])
         delta = time_trigger - time_from_db
         if delta >= cooldown:
             return True
@@ -297,9 +337,61 @@ class Database:
                      owner: str,
                      time_trigger: typing.Union[int, float]
                      ) -> typing.Union[int, float]:
-        time_from_db = self.execute(f"SELECT time_trigger FROM is_got WHERE owner = '{owner}'", fetchone=True)
+        time_from_db = int(self.execute(f"SELECT time_trigger FROM is_got WHERE who = '{owner}'", fetchone=True)[0])
         return time_trigger - time_from_db
 
     def delete_pic(self,
                    pic_id: int):
         self.execute(f"DELETE FROM pics WHERE pic_id = {pic_id}", commit=True)
+
+    def get_slice_of_music_by_mood(self, mood: str, page: int = 1):
+        offset = 10 * (page - 1)
+        sql = f"""
+        SELECT
+            *
+        FROM
+            music
+        WHERE
+            music_mood_type = "{mood}"
+        LIMIT
+            10
+        OFFSET 
+            {offset}
+        """
+        # logging.info(sql)
+        data = self.execute(sql, fetchall=True)
+        # pprint(data)
+        return data
+
+    def get_music(self, music_id: str):
+        sql = f"""
+        SELECT
+            file_id, duration
+        FROM
+            music
+        WHERE
+            music_id = "{music_id}"
+        """
+        file_id, duration = self.execute(sql, fetchone=True)
+        return file_id, duration
+
+    def get_film(self, film_id: int):
+        sql = f"""
+        SELECT
+            film_name, comment
+        FROM
+            films
+        WHERE
+            film_id = "{film_id}"
+        """
+        film_name, comment = self.execute(sql, fetchone=True)
+        return film_name, comment
+
+    def delete_music(self, music_id):
+        sql = f"""
+        DELETE FROM
+            music
+        WHERE
+            music_id = "{music_id}"
+        """
+        self.execute(sql, commit=True)

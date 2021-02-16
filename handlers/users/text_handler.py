@@ -63,6 +63,7 @@ async def show_text_for_leila(call: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(Sasha(), show_text.filter())
 async def show_text_for_sasha(call: CallbackQuery, callback_data: dict):
+    print("im here")
     await call.answer()
     text_id = int(callback_data.get('text_id'))
     text = str(db.get_text(owner='sasha', text_id=text_id))
@@ -72,29 +73,29 @@ async def show_text_for_sasha(call: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(delete_cb.filter())
 async def delete_item(call: CallbackQuery, callback_data: dict):
-    item_id = callback_data.get('item_id')
-    owner = callback_data.get('owner')
-    item_category = callback_data.get('item_category')
-    if item_category == 'voice_message':
+    item_id = callback_data.get("item_id")
+    owner = callback_data.get("owner")
+    item_category = callback_data.get("item_category")
+    if item_category == "voice_messages":
         db.delete_voice_message(voice_message_id=item_id, owner=owner)
-    elif item_category == 'text':
+    elif item_category == "text":  # complete
         db.delete_text(text_id=item_id, owner=owner)
-        if owner == 'leila':
+        if owner == "leila":
             await bot.send_message(chat_id=call.message.chat.id, text="""
                                          Привет, вот твой список текстов, выбирай, что нужно
                                          """, reply_markup=get_better_pages_keyboard(db.get_all_text(owner='leila'),
                                                                                      owner='leila'))
-        elif owner == 'sasha':
+        elif owner == "sasha":
             await bot.send_message(chat_id=call.message.chat.id, text="""
                                          Привет, вот твой список текстов, выбирай, что нужно
                                          """, reply_markup=get_better_pages_keyboard(db.get_all_text(owner='sasha'),
                                                                                      owner='sasha'))
-    elif item_category == 'film':
+    elif item_category == "films":
         db.delete_film(film_id=item_id)
-    elif item_category == 'music':
+    elif item_category == "music":
         db.delete_music(music_id=item_id)
-    elif item_category == 'pics':
+    elif item_category == "pics":  # complete
         db.delete_pic(pic_id=item_id)
-    await call.answer(text=f'Вы успешно удалили {item_category}')
+    await call.answer(text=f"Вы успешно удалили {item_category}")
     if item_category != "pics":
         await call.message.delete()
