@@ -63,7 +63,6 @@ async def show_text_for_leila(call: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(Sasha(), show_text.filter())
 async def show_text_for_sasha(call: CallbackQuery, callback_data: dict):
-    print("im here")
     await call.answer()
     text_id = int(callback_data.get('text_id'))
     text = str(db.get_text(owner='sasha', text_id=text_id))
