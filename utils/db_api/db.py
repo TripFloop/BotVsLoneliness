@@ -401,55 +401,57 @@ class Database:
         self.execute(sql, commit=True)
         
     def create_tables(self):
-        sql =        """CREATE TABLE "films" (
+        sql_queries =        ["""CREATE TABLE "films" (
                         "film_id"	INTEGER NOT NULL UNIQUE,
                         "film_name"	TEXT NOT NULL,
                         "comment"	TEXT,
                         PRIMARY KEY("film_id" AUTOINCREMENT)
-                        );
-                        CREATE TABLE "is_got" (
+                        )""",
+                        """CREATE TABLE "is_got" (
                         "who"	TEXT NOT NULL UNIQUE,
                         "time_trigger"	INTEGER
-                        );
-                        CREATE TABLE "music" (
+                        )""",
+                        """CREATE TABLE "music" (
                         "music_id"	INTEGER NOT NULL UNIQUE,
                         "music_mood_type"	TEXT NOT NULL,
                         "file_id"	INTEGER NOT NULL UNIQUE,
                         "music_name"	TEXT NOT NULL,
                         "duration"	TEXT NOT NULL,
                         PRIMARY KEY("music_id" AUTOINCREMENT)
-                        );
-                        CREATE TABLE "pics" (
+                        )""",
+                        """CREATE TABLE "pics" (
                         "pic_id"	INTEGER NOT NULL UNIQUE,
                         "owner"	TEXT NOT NULL,
                         "iserotic"	INTEGER NOT NULL,
                         "file_id"	TEXT NOT NULL UNIQUE,
                         PRIMARY KEY("pic_id" AUTOINCREMENT)
-                        );
-                        CREATE TABLE "texts_to_pic_from_leila" (
+                        )""",
+                        """CREATE TABLE "texts_to_pic_from_leila" (
                         "text_id"	INTEGER NOT NULL UNIQUE,
                         "text"	TEXT NOT NULL UNIQUE,
                         "iserotic"	INTEGER NOT NULL,
                         PRIMARY KEY("text_id" AUTOINCREMENT)
-                        );
-                        CREATE TABLE "texts_to_pic_from_sasha" (
+                        )""",
+                        """CREATE TABLE "texts_to_pic_from_sasha" (
                         "text_id"	INTEGER NOT NULL UNIQUE,
                         "text"	TEXT NOT NULL UNIQUE,
                         "iserotic"	INTEGER NOT NULL,
                         PRIMARY KEY("text_id" AUTOINCREMENT)
-                        );
-                        CREATE TABLE "voice_messages_from_leila" (
+                        )""",
+                        """CREATE TABLE "voice_messages_from_leila" (
                         "voice_message_id"	INTEGER NOT NULL UNIQUE,
                         "file_id"	TEXT NOT NULL UNIQUE,
                         "comment"	TEXT,
                         PRIMARY KEY("voice_message_id" AUTOINCREMENT)
-                        );
-                        CREATE TABLE "voice_messages_from_sasha" (
+                        )""",
+                        """CREATE TABLE "voice_messages_from_sasha" (
                         "voice_message_id"	INTEGER NOT NULL,
                         "file_id"	TEXT NOT NULL UNIQUE,
                         "comment"	TEXT NOT NULL,
                         PRIMARY KEY("voice_message_id" AUTOINCREMENT)
-                        )
-                        """
-        return sql
+                        )"""
+                        ]
+        for sql in sql_queries:
+            self.execute(sql, commit=True)
+
 
