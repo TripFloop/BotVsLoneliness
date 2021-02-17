@@ -84,7 +84,7 @@ class Database:
         """
         self.execute(sql, parameters=(text, iserotic), commit=True)
 
-    def get_rand_text(self, from_name: str, iserotic: bool):
+    def get_rand_text(self, owner: str, iserotic: bool):
         if iserotic is True:
             iserotic = 1
         else:
@@ -93,9 +93,8 @@ class Database:
         SELECT
             text           
         FROM
-            Texts_to_pic           
-        WHERE
-            from_name = {from_name}               
+            texts_to_pic_from_{owner}           
+        WHERE             
             AND iserotic = {iserotic}         
         ORDER   BY
             RANDOM()         LIMIT 1
@@ -118,21 +117,25 @@ class Database:
         self.execute(sql, parameters=(owner, file_id, iserotic), commit=True)
 
     def get_rand_pic(self, owner: str, iserotic: bool):
-        string_from_db = self.execute(
+        if iserotic:
+            iserotic = 1
+        else:
+            iserotic = 0
+        file_id = self.execute(
             sql=f"""
         SELECT 
-            *
+            file_id
         FROM 
             pics
         WHERE 
-            owner = {owner}
+            owner = "{owner}"
             AND iserotic = {iserotic}
         ORDER BY 
             RANDOM()
         LIMIT 1
             """,
             fetchone=True)
-        return string_from_db[0][3]
+        return file_id
 
     def delete_text(self, text_id: int, owner: str):
         sql = f"""
