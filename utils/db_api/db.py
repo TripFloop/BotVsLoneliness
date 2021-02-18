@@ -95,7 +95,7 @@ class Database:
         FROM
             texts_to_pic_from_{owner}           
         WHERE             
-            AND iserotic = {iserotic}         
+            iserotic = {iserotic}         
         ORDER   BY
             RANDOM()         LIMIT 1
         """
