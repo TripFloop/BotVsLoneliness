@@ -10,16 +10,16 @@ from datetime import date
 
 async def send_to_leila(iserotic: bool):
     try:
-        await bot.send_photo(chat_id=leila_id, photo=db.get_rand_pic(iserotic=iserotic, owner="sasha"),
-                             caption=db.get_rand_text(iserotic=iserotic, owner="sasha"))
+        await bot.send_photo(chat_id=leila_id, photo=db.get_rand_pic(iserotic=iserotic, owner="sasha")[0],
+                             caption=db.get_rand_text(iserotic=iserotic, owner="sasha")[0])
     except Exception as err:
         logging.error(err)
 
 
 async def send_to_sasha(iserotic: bool):
     try:
-        await bot.send_photo(chat_id=owner_id, photo=db.get_rand_pic(iserotic=iserotic, owner="leila"),
-                             caption=db.get_rand_text(iserotic=iserotic, owner="leila"))
+        await bot.send_photo(chat_id=owner_id, photo=db.get_rand_pic(iserotic=iserotic, owner="leila")[0],
+                             caption=db.get_rand_text(iserotic=iserotic, owner="leila")[0])
     except Exception as err:
         logging.error(err)
 
