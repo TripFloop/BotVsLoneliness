@@ -60,7 +60,7 @@ def main_func():
                       "date",
                       args=[True],
                       run_date=f"{date.today().year}-{date.today().month}-{date.today().day} {eve_hour_leila}:00:05")
-    logging.info("Today we chose such hours")
+    logging.info("Today we have chosen such hours")
     logging.info(f"For Sasha - Day: {sasha_day_hours}, Night: {eve_hour_sasha}")
     logging.info(f"For Leila - Day: {leila_day_hours}, Night: {eve_hour_leila}")
 
