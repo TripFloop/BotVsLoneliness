@@ -10,7 +10,10 @@ from datetime import date
 
 async def send_to_leila(iserotic: bool):
     try:
-        caption = db.get_rand_text(iserotic=iserotic, owner="sasha")[0]
+        try:
+            caption = db.get_rand_text(iserotic=iserotic, owner="sasha")[0]
+        except TypeError:
+            caption = None
         await bot.send_photo(chat_id=leila_id, photo=db.get_rand_pic(iserotic=iserotic, owner="sasha")[0],
                              caption=caption)
     except Exception as err:
@@ -19,7 +22,10 @@ async def send_to_leila(iserotic: bool):
 
 async def send_to_sasha(iserotic: bool):
     try:
-        caption = db.get_rand_text(iserotic=iserotic, owner="leila")[0]
+        try:
+            caption = db.get_rand_text(iserotic=iserotic, owner="leila")[0]
+        except TypeError:
+            caption = None
         await bot.send_photo(chat_id=owner_id, photo=db.get_rand_pic(iserotic=iserotic, owner="leila")[0],
                              caption=caption)
     except Exception as err:
