@@ -3,7 +3,7 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.handler import CancelHandler, current_handler
 
-
+# Need to refactor
 class OneTimeMiddleware(BaseMiddleware):
     async def on_process_message(self, message: types.Message):
         handler = current_handler.get()
